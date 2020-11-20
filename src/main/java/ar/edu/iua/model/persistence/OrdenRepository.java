@@ -14,12 +14,12 @@ public interface OrdenRepository extends JpaRepository<Orden, Long> {
 
     @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Transactional
-    @Query(value = "UPDATE orden o SET o.caudal = ?2, o.densidad = ?3, o.temp = ?4, o.masa_acum = ?5, o.fecha_ultimo_almacenamiento = ?6 WHERE o.id = ?1", nativeQuery = true)
+    @Query(value = "UPDATE orden o SET o.caudal = ?2, o.densidad = ?3, o.temperatura = ?4, o.masa_acum = ?5, o.fecha_ultimo_almacenamiento = ?6 WHERE o.id = ?1", nativeQuery = true)
     void updateOrdenSurtidorConFecha(long idOrden, double caudal , double densidad, double temp, double masaAcum, Date fechaUltimoAlmacenamiento);
 
     @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Transactional
-    @Query(value = "UPDATE orden o SET o.caudal = ?2, o.densidad = ?3, o.temp = ?4, o.masa_acum = ?5 WHERE o.id = ?1", nativeQuery = true)
+    @Query(value = "UPDATE orden o SET o.caudal = ?2, o.densidad = ?3, o.temperatura = ?4, o.masa_acum = ?5 WHERE o.id = ?1", nativeQuery = true)
     void updateOrdenSurtidor(long idOrden, double caudal , double densidad, double temp, double masaAcum);
 
     @Query(value = "select MAX(id) from orden", nativeQuery = true)

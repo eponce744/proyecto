@@ -89,7 +89,7 @@ public class OrdenBusiness implements IOrdenBusiness {
         Orden orden = null;
         try {
             orden = ordenDAO.findByCodigoExterno(ordenSurtidorDTO.getIdOrden());
-            
+
             if (!orden.getPsw().equals(ordenSurtidorDTO.getPsw())) {
                 throw new BadRequestException("Password Inválido");
             }
@@ -102,7 +102,7 @@ public class OrdenBusiness implements IOrdenBusiness {
             for (Cisterna c : orden.getCamion().getCisternaList()) {
                 capacidad += c.getCapacidad();
             }
-            
+
             if (ordenSurtidorDTO.getMasaAcum() > capacidad || ordenSurtidorDTO.getMasaAcum() > orden.getPreset()) {
                 throw new BadRequestException("No se puede cargar mas combustible, se excede la capacidad del camion");
             }
@@ -112,14 +112,14 @@ public class OrdenBusiness implements IOrdenBusiness {
             OrdenDetalle ordenDetalle = new OrdenDetalle(ordenSurtidorDTO.getMasaAcum(), ordenSurtidorDTO.getDensidad(), ordenSurtidorDTO.getTemp(), caudal, orden.getId(), dateSurtidor);
             if (caudal > 0 && orden.getMasaAcum() < ordenSurtidorDTO.getMasaAcum() && ordenSurtidorDTO.getMasaAcum() > 0) {
                 if (orden.getFechaUltimoAlmacenamiento() != null) {
-                   if ((dateSurtidor.getTime() - orden.getFechaUltimoAlmacenamiento().getTime()) >= 10000) {
-                	   ordenDetalleBusiness.save(ordenDetalle);
-                       ordenDAO.updateOrdenSurtidorConFecha(orden.getId(), caudal, ordenSurtidorDTO.getDensidad(), ordenSurtidorDTO.getTemp(), ordenSurtidorDTO.getMasaAcum(), dateSurtidor);
-                       orden = load(orden.getId());
-                   } else {
-                       ordenDAO.updateOrdenSurtidor(orden.getId(), caudal, ordenSurtidorDTO.getDensidad(), ordenSurtidorDTO.getTemp(), ordenSurtidorDTO.getMasaAcum());
-                       orden = load(orden.getId());
-                   }    
+                    if ((dateSurtidor.getTime() - orden.getFechaUltimoAlmacenamiento().getTime()) >= 10000) {
+                        ordenDetalleBusiness.save(ordenDetalle);
+                        ordenDAO.updateOrdenSurtidorConFecha(orden.getId(), caudal, ordenSurtidorDTO.getDensidad(), ordenSurtidorDTO.getTemp(), ordenSurtidorDTO.getMasaAcum(), dateSurtidor);
+                        orden = load(orden.getId());
+                    } else {
+                        ordenDAO.updateOrdenSurtidor(orden.getId(), caudal, ordenSurtidorDTO.getDensidad(), ordenSurtidorDTO.getTemp(), ordenSurtidorDTO.getMasaAcum());
+                        orden = load(orden.getId());
+                    }
                 } else {
                     ordenDetalleBusiness.save(ordenDetalle);
                     ordenDAO.updateOrdenSurtidorConFecha(orden.getId(), caudal, ordenSurtidorDTO.getDensidad(), ordenSurtidorDTO.getTemp(), ordenSurtidorDTO.getMasaAcum(), dateSurtidor);
@@ -140,7 +140,7 @@ public class OrdenBusiness implements IOrdenBusiness {
         return orden;
     }
 
-  
+
 
     @Override
     public Orden updatePesajeInicial(PesajeDTO pesajeDTO) throws BusinessException, NotFoundException, BadRequestException {
@@ -151,17 +151,17 @@ public class OrdenBusiness implements IOrdenBusiness {
                 throw new BadRequestException("La orden no se encuentra en estado 1.");
             }
             Date dateSurtidor = java.util.Calendar.getInstance().getTime();
-            String password = randomPassword(5); 
+            String password = randomPassword(5);
             ordenDAO.updatePesajeInicial(pesajeDTO.getIdOrden(), pesajeDTO.getPeso(), dateSurtidor, 2, password);
             orden = load(orden.getId());
         }catch (BadRequestException e) {
             log.error(e.getMessage(), e);
             throw new BadRequestException(e);
-        }  
+        }
         catch (BusinessException e) {
             log.error(e.getMessage(), e);
             throw new BusinessException(e);
-        } 
+        }
         if (orden == null) {
             throw new NotFoundException("No se encontro ningun producto con el filtro.");
         }
@@ -178,7 +178,7 @@ public class OrdenBusiness implements IOrdenBusiness {
         }
         return sb.toString();
     }
-    
+
     @Override
     public Orden cerrarOrdenPorCodigoExterno(OrdenSurtidorDTO ordenDTO) throws BusinessException, NotFoundException,BadRequestException {
         Orden orden = null;
@@ -195,7 +195,7 @@ public class OrdenBusiness implements IOrdenBusiness {
         }catch (BadRequestException e) {
             log.error(e.getMessage(), e);
             throw new BadRequestException(e);
-        } 
+        }
         catch (BusinessException e) {
             log.error(e.getMessage(), e);
             throw new BusinessException(e);
@@ -216,9 +216,9 @@ public class OrdenBusiness implements IOrdenBusiness {
                 throw new BadRequestException("La orden no se ha cerrado aún.");
             } else if (orden.getEstado() == 3) {
                 Date dateSurtidor = java.util.Calendar.getInstance().getTime();
-                ordenDAO.updatePesajeFinal(pesajeDTO.getIdOrden(), pesajeDTO.getPeso(), dateSurtidor); 
+                ordenDAO.updatePesajeFinal(pesajeDTO.getIdOrden(), pesajeDTO.getPeso(), dateSurtidor);
                 conciliacion = calcularConciliacion(orden.getId());
-                conciliacion.setCodigoExterno(pesajeDTO.getIdOrden()); 
+                conciliacion.setCodigoExterno(pesajeDTO.getIdOrden());
                 conciliacion = conciliacionBusiness.save(conciliacion);
                 ordenDAO.updateConciliacion(orden.getId(), conciliacion.getId());
                 orden = load(orden.getId());
@@ -227,11 +227,11 @@ public class OrdenBusiness implements IOrdenBusiness {
         }catch (BadRequestException e) {
             log.error(e.getMessage(), e);
             throw new BadRequestException(e);
-        }  
+        }
         catch (BusinessException e) {
             log.error(e.getMessage(), e);
             throw new BusinessException(e);
-        } 
+        }
         if (orden == null || conciliacion == null) {
             throw new NotFoundException("No se encontro ninguna orden con el filtro.");
         }

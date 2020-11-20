@@ -23,8 +23,6 @@ public class ConciliacionBusiness implements IConciliacionBusiness {
 
     @Autowired
     private ConciliacionRepository conciliacionDAO;
-    @Autowired
-    private OrdenRepository ordenDAO;
 
     @Override
     public Conciliacion load(Long id) throws BusinessException, NotFoundException {
@@ -72,8 +70,7 @@ public class ConciliacionBusiness implements IConciliacionBusiness {
     public Conciliacion getConciliacionByCodigoExterno(String codigoExterno) throws BusinessException, NotFoundException {
         Conciliacion conciliacion = null;
         try {
-            Orden orden = ordenDAO.findByCodigoExterno(codigoExterno);
-            conciliacion = load(orden.getId());
+            conciliacion = conciliacionDAO.findByCodigoExterno(codigoExterno);
         }  catch (Exception e) {
         throw new BusinessException(e);
     }
